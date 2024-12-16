@@ -8,13 +8,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bookexplorerapp.BookDetailsActivity
 import com.example.bookexplorerapp.R
-import com.example.bookexplorerapp.model.Book
 
-class BookAdapter(private val books: List<Book>) :
+class BookAdapter(private val bookTitles: List<String>) :
     RecyclerView.Adapter<BookAdapter.BookViewHolder>() {
 
-    class BookViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val title: TextView = view.findViewById(R.id.tvBookTitle)
+    class BookViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val bookTitle: TextView = itemView.findViewById(R.id.tvBookTitle)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BookViewHolder {
@@ -24,18 +23,18 @@ class BookAdapter(private val books: List<Book>) :
     }
 
     override fun onBindViewHolder(holder: BookViewHolder, position: Int) {
-        val book = books[position]
-        holder.title.text = book.title
+        val title = bookTitles[position]
+        holder.bookTitle.text = title
 
-        // Handle item click
+        // Handle click
         holder.itemView.setOnClickListener {
-            val intent = Intent(holder.itemView.context, BookDetailsActivity::class.java)
-            intent.putExtra("BOOK_TITLE", book.title)
-            intent.putExtra("BOOK_DESCRIPTION", "Description for ${book.title}") // Dummy description
-            holder.itemView.context.startActivity(intent)
+            val context = holder.itemView.context
+            val intent = Intent(context, BookDetailsActivity::class.java).apply {
+                putExtra("bookTitle", title) // Pass book title
+            }
+            context.startActivity(intent)
         }
     }
 
-
-    override fun getItemCount(): Int = books.size
+    override fun getItemCount(): Int = bookTitles.size
 }
