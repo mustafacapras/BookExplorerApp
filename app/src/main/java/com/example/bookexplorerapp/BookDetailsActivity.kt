@@ -5,20 +5,15 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
 class BookDetailsActivity : AppCompatActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_book_details)
 
-        // Get data passed via Intent
-        val title = intent.getStringExtra("BOOK_TITLE")
-        val description = intent.getStringExtra("BOOK_DESCRIPTION")
+        // Get book title from Intent
+        val bookTitle = intent.getStringExtra("bookTitle")
 
-        // Bind data to the TextViews
-        val titleTextView = findViewById<TextView>(R.id.tvBookDetailsTitle)
-        val descriptionTextView = findViewById<TextView>(R.id.tvBookDetailsDescription)
-
-        titleTextView.text = title
-        descriptionTextView.text = description ?: "No description available"
+        // Set title to TextView
+        val titleTextView: TextView = findViewById(R.id.tvBookDetailsTitle)
+        titleTextView.text = bookTitle
     }
 }
