@@ -46,11 +46,10 @@ class BookAdapter(private val books: List<Book>) :
                 putExtra("bookTitle", book.title)
                 putExtra("bookAuthor", book.author ?: "Unknown Author")
                 putExtra("bookCoverUrl", coverUrl)
-                putExtra("bookDescription", "Description not available") // Placeholder
+                putExtra("workId", book.workId) // Pass work ID for fetching description
             }
             context.startActivity(intent)
         }
-
     }
 
     override fun getItemCount(): Int = books.size

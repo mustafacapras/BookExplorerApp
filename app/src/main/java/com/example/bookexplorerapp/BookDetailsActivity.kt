@@ -4,34 +4,59 @@ import android.os.Bundle
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
+import com.example.bookexplorerapp.model.BookDetailsResponse
+import com.example.bookexplorerapp.network.RetrofitClient
+import kotlinx.coroutines.launch
+import retrofit2.Response
 
 class BookDetailsActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_book_details)
 
-        // Extract data passed via Intent
         val bookTitle = intent.getStringExtra("bookTitle") ?: "No Title"
         val bookAuthor = intent.getStringExtra("bookAuthor") ?: "Unknown Author"
         val bookCoverUrl = intent.getStringExtra("bookCoverUrl") ?: ""
-        val bookDescription = intent.getStringExtra("bookDescription") ?: "Description not available"
+        val workId = intent.getStringExtra("workId")
 
-        // Find views
         val titleTextView: TextView = findViewById(R.id.tvBookDetailsTitle)
         val authorTextView: TextView = findViewById(R.id.tvBookDetailsAuthor)
         val coverImageView: ImageView = findViewById(R.id.ivBookDetailsCover)
         val descriptionTextView: TextView = findViewById(R.id.tvBookDetailsDescription)
 
-        // Set data to views
         titleTextView.text = bookTitle
         authorTextView.text = "Author: $bookAuthor"
-        descriptionTextView.text = bookDescription
 
-        // Load cover image using Glide
         Glide.with(this)
             .load(bookCoverUrl)
-            .placeholder(R.drawable.placeholder) // Placeholder image
+            .placeholder(R.drawable.placeholder)
             .into(coverImageView)
+
+        // Fetch and display description
+        if (workId != null) {
+            fetchBookDescription(workId, descriptionTextView)
+        } else {
+            descriptionTextView.text = "Description not available"
+        }
+    }
+
+    private fun fetchBookDescription(workId: String, descriptionTextView: TextView) {
+        lifecycleScope.launch {
+            try {
+                val response: Response<BookDetailsResponse> =
+                    RetrofitClient.getApiService().getBookDetails(workId.removePrefix("/works/"))
+                if (response.isSuccessful) {
+                    val description = response.body()?.description?.value
+                    descriptionTextView.text = description ?: "Description not available"
+                } else {
+                    descriptionTextView.text = "Failed to load description"
+                }
+            } catch (e: Exception) {
+                descriptionTextView.text = "Error: ${e.message}"
+            }
+        }
     }
 }

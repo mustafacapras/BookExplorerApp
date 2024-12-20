@@ -6,14 +6,16 @@ data class BookResponse(
 
 data class BookDocument(
     val title: String,
-    val author_name: List<String>?, // List of author names
-    val cover_i: Int? // Cover ID for thumbnails
+    val author_name: List<String>?,
+    val cover_i: Int?,
+    val key: String // Work ID
 ) {
     fun toBook(): Book {
         return Book(
             title = title,
-            author = author_name?.joinToString(", "), // Convert list to a single string
-            coverId = cover_i
+            author = author_name?.joinToString(", "),
+            coverId = cover_i,
+            workId = key // Extract work ID
         )
     }
 }
