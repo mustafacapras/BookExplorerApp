@@ -1,9 +1,7 @@
 package com.example.bookexplorerapp.model
 
 data class BookDetailsResponse(
-    val description: Description?
-)
-
-data class Description(
-    val value: String // The actual description
+    val title: String?,
+    val author: String?,
+    val description: Any? // Handles both String and Object types
 )

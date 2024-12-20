@@ -35,7 +35,6 @@ class BookDetailsActivity : AppCompatActivity() {
             .placeholder(R.drawable.placeholder)
             .into(coverImageView)
 
-        // Fetch and display description
         if (workId != null) {
             fetchBookDescription(workId, descriptionTextView)
         } else {
@@ -49,8 +48,12 @@ class BookDetailsActivity : AppCompatActivity() {
                 val response: Response<BookDetailsResponse> =
                     RetrofitClient.getApiService().getBookDetails(workId.removePrefix("/works/"))
                 if (response.isSuccessful) {
-                    val description = response.body()?.description?.value
-                    descriptionTextView.text = description ?: "Description not available"
+                    val description = when (val desc = response.body()?.description) {
+                        is String -> desc
+                        is Map<*, *> -> desc["value"] as? String ?: "No description available"
+                        else -> "No description available"
+                    }
+                    descriptionTextView.text = description
                 } else {
                     descriptionTextView.text = "Failed to load description"
                 }
