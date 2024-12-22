@@ -50,8 +50,8 @@ class BookDetailsActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val description = when (val desc = response.body()?.description) {
                         is String -> desc
-                        is Map<*, *> -> desc["value"] as? String ?: "No description available"
-                        else -> "No description available"
+                        is Map<*, *> -> desc["value"] as? String ?: "No description available !!"
+                        else -> "No description available !!"
                     }
                     descriptionTextView.text = description
                 } else {
