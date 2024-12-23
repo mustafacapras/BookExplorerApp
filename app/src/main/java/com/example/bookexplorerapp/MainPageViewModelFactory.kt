@@ -10,6 +10,6 @@ class MainPageViewModelFactory(private val apiService: ApiService) : ViewModelPr
         if (modelClass.isAssignableFrom(MainPageViewModel::class.java)) {
             return MainPageViewModel(apiService) as T
         }
-        throw IllegalArgumentException("Unknown ViewModel class")
+        throw IllegalArgumentException("Unknown ViewModel class !")
     }
 }
