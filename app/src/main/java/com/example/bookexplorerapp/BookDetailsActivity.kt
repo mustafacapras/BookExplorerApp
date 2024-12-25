@@ -17,48 +17,27 @@ class BookDetailsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_book_details)
 
-        val bookTitle = intent.getStringExtra("bookTitle") ?: "No Title"
-        val bookAuthor = intent.getStringExtra("bookAuthor") ?: "Unknown Author"
-        val bookCoverUrl = intent.getStringExtra("bookCoverUrl") ?: ""
-        val workId = intent.getStringExtra("workId")
+        val workId = intent.getStringExtra("work_id") ?: return
 
         val titleTextView: TextView = findViewById(R.id.tvBookDetailsTitle)
         val authorTextView: TextView = findViewById(R.id.tvBookDetailsAuthor)
         val coverImageView: ImageView = findViewById(R.id.ivBookDetailsCover)
         val descriptionTextView: TextView = findViewById(R.id.tvBookDetailsDescription)
 
-        titleTextView.text = bookTitle
-        authorTextView.text = "Author: $bookAuthor"
-
-        Glide.with(this)
-            .load(bookCoverUrl)
-            .placeholder(R.drawable.placeholder)
-            .into(coverImageView)
-
-        if (workId != null) {
-            fetchBookDescription(workId, descriptionTextView)
-        } else {
-            descriptionTextView.text = "Description not available"
-        }
-    }
-
-    private fun fetchBookDescription(workId: String, descriptionTextView: TextView) {
         lifecycleScope.launch {
-            try {
-                val response: Response<BookDetailsResponse> =
-                    RetrofitClient.getApiService().getBookDetails(workId.removePrefix("/works/"))
-                if (response.isSuccessful) {
-                    val description = when (val desc = response.body()?.description) {
-                        is String -> desc
-                        is Map<*, *> -> desc["value"] as? String ?: "No description available !!"
-                        else -> "No description available !!"
-                    }
-                    descriptionTextView.text = description
-                } else {
-                    descriptionTextView.text = "Failed to load description"
-                }
-            } catch (e: Exception) {
-                descriptionTextView.text = "Error: ${e.message}"
+            val response: Response<BookDetailsResponse> = RetrofitClient.getApiService().getBookDetails(workId)
+            if (response.isSuccessful) {
+                val bookDetails = response.body()
+                titleTextView.text = bookDetails?.title ?: "No Title"
+                authorTextView.text = "Author: ${bookDetails?.author ?: "Unknown Author"}"
+                descriptionTextView.text = bookDetails?.description?.toString() ?: "Description not available"
+
+                Glide.with(this@BookDetailsActivity)
+                    .load(bookDetails?.coverUrl)
+                    .placeholder(R.drawable.placeholder)
+                    .into(coverImageView)
+            } else {
+                descriptionTextView.text = "Failed to load book details"
             }
         }
     }
